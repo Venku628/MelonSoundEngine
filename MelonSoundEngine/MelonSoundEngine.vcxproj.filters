@@ -30,6 +30,9 @@
     <ClInclude Include="SourceVoice3D.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Voice.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceVoice.cpp">

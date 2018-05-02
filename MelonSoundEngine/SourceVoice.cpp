@@ -2,6 +2,7 @@
 
 CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName)
 {
+	// TODO: think of a better way to do this
 	m_pXAudio2 = &pXAudio2;
 
 	// TODO: handle hresult if necessary
@@ -11,7 +12,6 @@ CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName)
 CSourceVoice::~CSourceVoice()
 {
 	delete m_pSourceVoice;
-	delete m_pXAudio2;
 }
 
 HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName)
@@ -77,6 +77,11 @@ HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName)
 		return hr;
 
 	return S_OK;
+}
+
+HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_SENDS SFXSendList)
+{
+	return E_NOTIMPL;
 }
 
 HRESULT CSourceVoice::StartPlayback()

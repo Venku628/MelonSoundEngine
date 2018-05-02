@@ -1,2 +1,6 @@
-﻿  SourceVoice.cpp
+﻿  MelonSoundEngine.cpp
+  SourceVoice.cpp
+  SourceVoice3D.cpp
+  SubmixVoice.cpp
+  Code wird generiert...
   MelonSoundEngine.vcxproj -> C:\Visual Studio 2015\Projects\MelonSoundEngine\Debug\MelonSoundEngine.lib

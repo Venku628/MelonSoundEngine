@@ -2,10 +2,6 @@
 
 
 
-CSourceVoice3D::CSourceVoice3D()
-{
-	;
-}
 
 
 CSourceVoice3D::~CSourceVoice3D()

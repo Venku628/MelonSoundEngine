@@ -1,5 +1,6 @@
 #pragma once
 #include "SourceVoice.h"
+
 class CSourceVoice3D :
 	public CSourceVoice
 {
