@@ -5,6 +5,7 @@
 class CVoice
 {
 public:
-	//virtual void Start() = 0;
+	virtual void SetVolume(float fVolume) = 0;
+
 };
 

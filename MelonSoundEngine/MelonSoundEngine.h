@@ -2,6 +2,7 @@
 
 #include "SourceVoice.h"
 #include "SubmixVoice.h"
+#include <unordered_map>
 
 class CMelonSoundEngine
 {
@@ -18,9 +19,17 @@ public:
 	CSourceVoice3D * CreateSourceVoice3D(const char * stFileName);
 	CSubmixVoice * CreateSubmixVoice();
 
+	void ClearVoicepool();
+
+	void AssignVoice();
+
 private:
 	IXAudio2MasteringVoice * m_pMasteringVoice;
 	IXAudio2 * m_pXAudio2;
+
+	std::unordered_multimap<unsigned int, IXAudio2SourceVoice*> m_voicepool;
+
+	unsigned int m_maxVoiceInstances = 20, m_voiceInstances = 0;
 
 	CMelonSoundEngine();
 	~CMelonSoundEngine();

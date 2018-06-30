@@ -33,5 +33,21 @@ CSourceVoice3D * CMelonSoundEngine::CreateSourceVoice3D(const char * stFileName)
 
 CSubmixVoice * CMelonSoundEngine::CreateSubmixVoice()
 {
-	return nullptr;
+	return new CSubmixVoice(*m_pXAudio2);
+}
+
+void CMelonSoundEngine::ClearVoicepool()
+{
+	for (auto it = m_voicepool.begin(); it != m_voicepool.end(); ++it)
+	{
+		if(it->second != nullptr)
+			it->second->DestroyVoice();
+	}
+	m_voicepool.clear();
+}
+
+void CMelonSoundEngine::AssignVoice()
+{
+	// unsigned int voiceKey = 0;
+
 }

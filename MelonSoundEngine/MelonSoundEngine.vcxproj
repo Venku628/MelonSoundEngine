@@ -149,7 +149,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Listener.h" />
     <ClInclude Include="MelonSoundEngine.h" />
+    <ClInclude Include="MelonVector3D.h" />
     <ClInclude Include="SourceVoice.h" />
     <ClInclude Include="SourceVoice3D.h" />
     <ClInclude Include="SubmixVoice.h" />
@@ -157,7 +159,9 @@
     <ClInclude Include="XAudio2Basics.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Listener.cpp" />
     <ClCompile Include="MelonSoundEngine.cpp" />
+    <ClCompile Include="MelonVector3D.cpp" />
     <ClCompile Include="SourceVoice.cpp" />
     <ClCompile Include="SourceVoice3D.cpp" />
     <ClCompile Include="SubmixVoice.cpp" />

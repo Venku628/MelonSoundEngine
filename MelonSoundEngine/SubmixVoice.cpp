@@ -4,15 +4,16 @@
 
 CSubmixVoice::CSubmixVoice(IXAudio2 &pXAudio2)
 {
-	m_SFXSend = { 0, m_pSubmixVoice };
-	m_SFXSendList = { 1, &m_SFXSend };
-
 	// TODO: think of a better way to do this
 	m_pXAudio2 = &pXAudio2;
 
-	
-
 	CreateSubmixVoice();
+
+	m_SFXSend = { 0, m_pSubmixVoice };
+	m_SFXSendList = { 1, &m_SFXSend };
+
+	
+	
 }
 
 
@@ -24,7 +25,7 @@ CSubmixVoice::~CSubmixVoice()
 
 CSourceVoice * CSubmixVoice::CreateSourceVoice(const char * stFileName)
 {
-	return nullptr;
+	return new CSourceVoice(*m_pXAudio2, stFileName, &m_SFXSendList);
 }
 
 CSourceVoice3D * CSubmixVoice::CreateSourceVoice3D(const char * stFileName)
@@ -37,6 +38,11 @@ CSubmixVoice * CSubmixVoice::CreateSubSubmixVoice()
 	return nullptr;
 }
 
+void CSubmixVoice::SetVolume(float fVolume)
+{
+	m_pSubmixVoice->SetVolume(fVolume);
+}
+
 
 const XAUDIO2_VOICE_SENDS& CSubmixVoice::GetSFXSendList() const
 {
@@ -47,5 +53,5 @@ const XAUDIO2_VOICE_SENDS& CSubmixVoice::GetSFXSendList() const
 HRESULT CSubmixVoice::CreateSubmixVoice()
 {
 	// TODO: what to do with the channel number?
-	return m_pXAudio2->CreateSubmixVoice(&m_pSubmixVoice, 1, 44100, 0, 0, 0, 0);;
+	return m_pXAudio2->CreateSubmixVoice(&m_pSubmixVoice, 1, 44100, 0, 0, 0, 0);
 }

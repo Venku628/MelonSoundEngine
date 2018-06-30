@@ -33,6 +33,12 @@
     <ClInclude Include="Voice.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="MelonVector3D.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceVoice.cpp">
@@ -45,6 +51,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="SourceVoice3D.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="MelonVector3D.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

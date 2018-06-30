@@ -15,6 +15,8 @@ public:
 	CSourceVoice3D * CreateSourceVoice3D(const char * stFileName);
 	CSubmixVoice * CreateSubSubmixVoice();
 
+	void SetVolume(float fVolume) override;
+
 	const XAUDIO2_VOICE_SENDS& GetSFXSendList() const;
 
 private:
