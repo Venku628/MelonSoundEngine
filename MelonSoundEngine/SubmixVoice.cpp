@@ -30,7 +30,7 @@ CSourceVoice * CSubmixVoice::CreateSourceVoice(const char * stFileName)
 
 CSourceVoice3D * CSubmixVoice::CreateSourceVoice3D(const char * stFileName)
 {
-	return nullptr;
+	return new CSourceVoice3D(*m_pXAudio2, stFileName, &m_SFXSendList);
 }
 
 CSubmixVoice * CSubmixVoice::CreateSubSubmixVoice()

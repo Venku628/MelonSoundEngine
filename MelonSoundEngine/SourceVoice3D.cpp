@@ -57,15 +57,45 @@ const CMelonVector3D * CSourceVoice3D::GetOrientationTopPointer() const
 
 void CSourceVoice3D::Tick()
 {
-	if (m_bDopplerEffectEnabled)
+	if (m_bFalloffEnabled)
 	{
-		DopplerEffectTick();
+		if (m_fFalloffRadius < m_position->CalculateDistance(*CListener::GetInstance().GetPositionPointer()))
+		{
+			if (m_bVoiceMuted)
+			{
+				m_bVoiceMuted = false;
+				m_pSourceVoice->SetVolume(m_fVolume);
+			}
+
+			if (m_bDopplerEffectEnabled)
+			{
+				DopplerEffectTick();
+			}
+			// Room for more Tick stuff
+		}
+		else if (!m_bVoiceMuted)
+		{
+			m_pSourceVoice->GetVolume(&m_fVolume);
+			m_pSourceVoice->SetVolume(0.f);
+			m_bVoiceMuted = true;
+		}
 	}
-
-
+	else
+	{
+		if (m_bDopplerEffectEnabled)
+		{
+			DopplerEffectTick();
+		}
+		// Room for more Tick stuff
+	}
 }
 
+// TODO: get non constant speed of sound from somewhere
 void CSourceVoice3D::DopplerEffectTick()
 {
-	 
+	CMelonVector3D sourceListenerVector = m_position->CalculateVectorBetweenPoints(*CListener::GetInstance().GetPositionPointer());
+	float sourceListenerDistance = sourceListenerVector.CalculateLength();
+	float debug = (DEBUG_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(*m_velocity) / sourceListenerDistance)) / 
+		(DEBUG_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(*CListener::GetInstance().GetVelocityPointer()) / sourceListenerDistance));
+	m_pSourceVoice->SetSourceSampleRate(m_uiBaseSampleRate * debug);
 }

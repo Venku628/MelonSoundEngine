@@ -8,9 +8,9 @@ public:
 	CMelonVector3D(float x, float y, float z);
 	~CMelonVector3D();
 
-	CMelonVector3D CalculateVectorBetweenPoints(CMelonVector3D& other) const;
-	float CalculateDotProduct(CMelonVector3D& other) const;
-	float CalculateDistance(CMelonVector3D& other) const;
+	CMelonVector3D CalculateVectorBetweenPoints(const CMelonVector3D& other) const;
+	float CalculateDotProduct(const CMelonVector3D& other) const;
+	float CalculateDistance(const CMelonVector3D& other) const;
 	float CalculateLength() const;
 
 	float GetX() const;

@@ -22,17 +22,17 @@ CMelonVector3D::~CMelonVector3D()
 }
 
 // Basicly  other - this = new vector
-CMelonVector3D CMelonVector3D::CalculateVectorBetweenPoints(CMelonVector3D & other) const
+CMelonVector3D CMelonVector3D::CalculateVectorBetweenPoints(const CMelonVector3D & other) const
 {
 	return CMelonVector3D(other.m_fX - m_fX, other.m_fY - m_fY, other.m_fZ - m_fZ);
 }
 
-float CMelonVector3D::CalculateDotProduct(CMelonVector3D & other) const
+float CMelonVector3D::CalculateDotProduct(const CMelonVector3D & other) const
 {
 	return (m_fX*other.m_fX + m_fY*other.m_fY + m_fZ*other.m_fZ);
 }
 
-float CMelonVector3D::CalculateDistance(CMelonVector3D& other) const
+float CMelonVector3D::CalculateDistance(const CMelonVector3D& other) const
 {
 	// doesn´t use CalculateLength because creating a vector first is not efficent
 	return sqrt((m_fX - other.m_fX)*(m_fX - other.m_fX) + (m_fY - other.m_fY)*(m_fY - other.m_fY) + (m_fZ - other.m_fZ)*(m_fZ - other.m_fZ));

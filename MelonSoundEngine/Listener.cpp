@@ -4,8 +4,8 @@
 
 CListener::CListener()
 {
-	m_position = new CMelonVector3D(0.f, 0.f, 0.f);
-	m_velocity = new CMelonVector3D(0.f, 0.f, 0.f);
+	m_position = new CMelonVector3D(1.f, 0.f, 0.f);
+	m_velocity = new CMelonVector3D(1.f, 0.f, 0.f);
 	m_orientationFront = new CMelonVector3D(0.f, 0.f, 0.f);
 	m_orientationTop = new CMelonVector3D(0.f, 0.f, 0.f);
 }

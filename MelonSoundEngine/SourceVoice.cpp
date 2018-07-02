@@ -9,6 +9,7 @@ CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName)
 	CreateSourceVoice(stFileName);
 }
 
+
 CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList)
 {
 	// TODO: think of a better way to do this
