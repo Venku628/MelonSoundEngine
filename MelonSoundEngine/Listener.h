@@ -1,4 +1,4 @@
-#include "MelonVector3D.h"
+#include "XAudio2Basics.h"
 #pragma once
 
 class CListener
@@ -19,11 +19,17 @@ public:
 
 	static CListener& GetInstance();
 
+	CMelonVector3D CalculatePointOnPanPlane(CMelonVector3D& sourcePoint);
+	float CalculateAngleToPanPlane(CMelonVector3D& sourcePoint, CMelonVector3D& pointOnPlane);
+	float CalculateAngleToOrientation(CMelonVector3D& pointOnPlane);
+
 private:
 	CMelonVector3D * m_position;
 	CMelonVector3D * m_velocity;
 	CMelonVector3D * m_orientationTop;
 	CMelonVector3D * m_orientationFront;
 
+	// precalculated for orthagonal projection onto plane for pan
+	float m_orientationTopDotOrientationTop;
 };
 

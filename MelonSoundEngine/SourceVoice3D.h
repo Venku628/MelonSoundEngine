@@ -57,5 +57,6 @@ private:
 	bool m_bVoiceMuted = false;
 
 	void DopplerEffectTick();
+	void PanTick();
 };
 

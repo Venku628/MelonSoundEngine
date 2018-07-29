@@ -1,7 +1,5 @@
 #include "MelonVector3D.h"
 
-
-
 CMelonVector3D::CMelonVector3D()
 {
 	m_fX = 0.f;
@@ -21,10 +19,30 @@ CMelonVector3D::~CMelonVector3D()
 {
 }
 
+CMelonVector3D CMelonVector3D::Normalize() const
+{
+	float length = CalculateLength();
+	return CMelonVector3D(m_fX / length, m_fY / length, m_fZ / length);
+}
+
 // Basicly  other - this = new vector
 CMelonVector3D CMelonVector3D::CalculateVectorBetweenPoints(const CMelonVector3D & other) const
 {
 	return CMelonVector3D(other.m_fX - m_fX, other.m_fY - m_fY, other.m_fZ - m_fZ);
+}
+
+float CMelonVector3D::CalculateAngleBetweenVectors(const CMelonVector3D & other) const
+{
+	CMelonVector3D thisNormalized = Normalize();
+	CMelonVector3D otherNormalized = other.Normalize();
+
+	float dotProduct = thisNormalized.CalculateDotProduct(otherNormalized);
+	if (dotProduct > ANGLE_TOLERANCE)
+		return 0.f;
+	if (dotProduct < -ANGLE_TOLERANCE)
+		return M_PI;
+
+	return acos(dotProduct);
 }
 
 float CMelonVector3D::CalculateDotProduct(const CMelonVector3D & other) const
@@ -41,6 +59,31 @@ float CMelonVector3D::CalculateDistance(const CMelonVector3D& other) const
 float CMelonVector3D::CalculateLength() const
 {
 	return sqrt(m_fX*m_fX + m_fY*m_fY + m_fZ*m_fZ);
+}
+
+float CMelonVector3D::operator*(const CMelonVector3D & rhs)
+{
+	return (m_fX*rhs.m_fX + m_fY * rhs.m_fY + m_fZ * rhs.m_fZ);
+}
+
+CMelonVector3D CMelonVector3D::operator+(const CMelonVector3D & rhs)
+{
+	return CMelonVector3D(m_fX + rhs.m_fX, m_fY + rhs.m_fY, m_fZ + rhs.m_fZ);
+}
+
+CMelonVector3D CMelonVector3D::operator-(const CMelonVector3D & rhs)
+{
+	return CMelonVector3D(m_fX - rhs.m_fX, m_fY - rhs.m_fY, m_fZ - rhs.m_fZ);
+}
+
+CMelonVector3D CMelonVector3D::operator*(const float rhs)
+{
+	return CMelonVector3D(m_fX * rhs, m_fY * rhs, m_fZ * rhs);
+}
+
+CMelonVector3D CMelonVector3D::operator/(const float rhs)
+{
+	return CMelonVector3D(m_fX / rhs, m_fY / rhs, m_fZ / rhs);
 }
 
 float CMelonVector3D::GetX() const

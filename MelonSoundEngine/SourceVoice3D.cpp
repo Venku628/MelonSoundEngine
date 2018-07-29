@@ -90,7 +90,7 @@ void CSourceVoice3D::Tick()
 	}
 }
 
-// TODO: get non constant speed of sound from somewhere
+// TODO: get non constant speed of sound from somewhere and remove debug
 void CSourceVoice3D::DopplerEffectTick()
 {
 	CMelonVector3D sourceListenerVector = m_position->CalculateVectorBetweenPoints(*CListener::GetInstance().GetPositionPointer());
@@ -98,4 +98,16 @@ void CSourceVoice3D::DopplerEffectTick()
 	float debug = (DEBUG_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(*m_velocity) / sourceListenerDistance)) / 
 		(DEBUG_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(*CListener::GetInstance().GetVelocityPointer()) / sourceListenerDistance));
 	m_pSourceVoice->SetSourceSampleRate(m_uiBaseSampleRate * debug);
+}
+
+void CSourceVoice3D::PanTick()
+{
+	CMelonVector3D positionOnPanPlane = CListener::GetInstance().CalculatePointOnPanPlane(*m_position);
+	float anglePositionPanPlane = m_position->CalculateVectorBetweenPoints(positionOnPanPlane).CalculateAngleBetweenVectors(m_position->CalculateVectorBetweenPoints(positionOnPanPlane));
+	float anglePositionOnPanPlaneOrientation = 0.f;
+
+
+	// TODO: calculate and apply output matrix
+
+
 }

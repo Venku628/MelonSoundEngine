@@ -37,6 +37,7 @@ void CListener::UpdateVelocity(float x, float y, float z)
 void CListener::UpdateOrientationFront(float x, float y, float z)
 {
 	m_orientationFront->SetXYZ(x, y, z);
+	m_orientationTopDotOrientationTop = x * x + y * y + z * z;
 }
 
 void CListener::UpdateOrientationTop(float x, float y, float z)
@@ -68,6 +69,27 @@ CListener & CListener::GetInstance()
 {
 	static CListener instance;
 	return instance;
+}
+
+// Calculates a point on the pan plane using orthogonal projection.
+CMelonVector3D CListener::CalculatePointOnPanPlane(CMelonVector3D & sourcePoint)
+{
+	//									(Sourcepos - Listenerpos) * Plane Normalvector
+	// Sourcepos - Plane Normalvector * ---------------------------------------------- = Point projected on Plane
+	//									Plane Normalvector * Plane Normalvector        <--precaclutalted
+	return sourcePoint - *m_orientationTop * ((sourcePoint - *m_position) * *m_orientationTop / m_orientationTopDotOrientationTop);
+}
+
+float CListener::CalculateAngleToPanPlane(CMelonVector3D & sourcePoint, CMelonVector3D & pointOnPlane)
+{
+
+
+	return 0.0f;
+}
+
+float CListener::CalculateAngleToOrientation(CMelonVector3D & pointOnPlane)
+{
+	return 0.0f;
 }
 
 
