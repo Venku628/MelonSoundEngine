@@ -3,6 +3,7 @@
 #include "SourceVoice.h"
 #include "SubmixVoice.h"
 #include <unordered_map>
+#include "MelonMatrix4.h"
 
 class CMelonSoundEngine
 {

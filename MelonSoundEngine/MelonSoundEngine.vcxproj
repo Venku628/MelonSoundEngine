@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="MelonMatrix4.h" />
     <ClInclude Include="MelonSoundEngine.h" />
     <ClInclude Include="MelonVector3D.h" />
     <ClInclude Include="SourceVoice.h" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Listener.cpp" />
+    <ClCompile Include="MelonMatrix4.cpp" />
     <ClCompile Include="MelonSoundEngine.cpp" />
     <ClCompile Include="MelonVector3D.cpp" />
     <ClCompile Include="SourceVoice.cpp" />

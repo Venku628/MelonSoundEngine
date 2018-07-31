@@ -39,6 +39,9 @@
     <ClInclude Include="Listener.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="MelonMatrix4.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceVoice.cpp">
@@ -57,6 +60,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Listener.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="MelonMatrix4.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
