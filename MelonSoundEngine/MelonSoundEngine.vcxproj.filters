@@ -39,7 +39,7 @@
     <ClInclude Include="Listener.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="MelonMatrix4.h">
+    <ClInclude Include="MelonMatrix3.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ClCompile Include="Listener.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="MelonMatrix4.cpp">
+    <ClCompile Include="MelonMatrix3.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

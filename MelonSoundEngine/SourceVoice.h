@@ -23,6 +23,8 @@ public:
 
 	void SetVolume(float fVolume) override;
 
+	IXAudio2SourceVoice * GetSourceVoice() const;
+
 protected:
 	
 	IXAudio2SourceVoice * m_pSourceVoice;

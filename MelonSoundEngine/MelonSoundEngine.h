@@ -3,7 +3,7 @@
 #include "SourceVoice.h"
 #include "SubmixVoice.h"
 #include <unordered_map>
-#include "MelonMatrix4.h"
+#include "MelonMatrix3.h"
 
 class CMelonSoundEngine
 {
@@ -19,6 +19,9 @@ public:
 	// missing inital 3D data until implemented
 	CSourceVoice3D * CreateSourceVoice3D(const char * stFileName);
 	CSubmixVoice * CreateSubmixVoice();
+
+	IXAudio2MasteringVoice * GetMasteringVoice() const;
+	IXAudio2 * GetXAudio2() const;
 
 	void ClearVoicepool();
 

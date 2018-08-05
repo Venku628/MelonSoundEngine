@@ -181,6 +181,11 @@ void CSourceVoice::SetVolume(float fVolume)
 	m_pSourceVoice->SetVolume(fVolume);
 }
 
+IXAudio2SourceVoice * CSourceVoice::GetSourceVoice() const
+{
+	return m_pSourceVoice;
+}
+
 uint32_t CSourceVoice::GetDefaultChannelMask(int channels)
 {
 	switch (channels)

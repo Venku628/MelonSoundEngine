@@ -29,12 +29,22 @@ CSourceVoice * CMelonSoundEngine::CreateSourceVoice(const char * stFileName)
 // TODO: implement!
 CSourceVoice3D * CMelonSoundEngine::CreateSourceVoice3D(const char * stFileName)
 {
-	return nullptr;
+	return new CSourceVoice3D(*m_pXAudio2, stFileName);
 }
 
 CSubmixVoice * CMelonSoundEngine::CreateSubmixVoice()
 {
 	return new CSubmixVoice(*m_pXAudio2);
+}
+
+IXAudio2MasteringVoice * CMelonSoundEngine::GetMasteringVoice() const
+{
+	return m_pMasteringVoice;
+}
+
+IXAudio2 * CMelonSoundEngine::GetXAudio2() const
+{
+	return m_pXAudio2;
 }
 
 void CMelonSoundEngine::ClearVoicepool()

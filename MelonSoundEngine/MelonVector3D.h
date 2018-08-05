@@ -7,6 +7,8 @@
 #pragma once
 class CMelonVector3D
 {
+	friend class CMelonMatrix3;
+
 public:
 	CMelonVector3D();
 	CMelonVector3D(float x, float y, float z);
@@ -16,15 +18,16 @@ public:
 
 	CMelonVector3D CalculateVectorBetweenPoints(const CMelonVector3D& other) const;
 	float CalculateAngleBetweenVectors(const CMelonVector3D& other) const;
+	float CalculateAngleToYAxis() const;
 	float CalculateDotProduct(const CMelonVector3D& other) const;
 	float CalculateDistance(const CMelonVector3D& other) const;
 	float CalculateLength() const;
 
-	float operator*(const CMelonVector3D& rhs);
-	CMelonVector3D operator+(const CMelonVector3D& rhs);
-	CMelonVector3D operator-(const CMelonVector3D& rhs);
-	CMelonVector3D operator*(const float rhs);
-	CMelonVector3D operator/(const float rhs);
+	float operator*(const CMelonVector3D& rhs) const;
+	CMelonVector3D operator+(const CMelonVector3D& rhs) const;
+	CMelonVector3D operator-(const CMelonVector3D& rhs) const;
+	CMelonVector3D operator*(const float rhs) const;
+	CMelonVector3D operator/(const float rhs) const;
 
 	float GetX() const;
 	float GetY() const;

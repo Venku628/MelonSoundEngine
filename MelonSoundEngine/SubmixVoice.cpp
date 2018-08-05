@@ -49,6 +49,11 @@ const XAUDIO2_VOICE_SENDS& CSubmixVoice::GetSFXSendList() const
 	return m_SFXSendList;
 }
 
+IXAudio2SubmixVoice * CSubmixVoice::GetSubmixVoice() const
+{
+	return m_pSubmixVoice;
+}
+
 // TODO: Do I need to handle HRESULTs?
 HRESULT CSubmixVoice::CreateSubmixVoice()
 {

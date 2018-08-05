@@ -10,12 +10,12 @@ public:
 
 	void UpdatePosition(float x, float y, float z);
 	void UpdateVelocity(float x, float y, float z);
-	void UpdateOrientationFront(float x, float y, float z);
-	void UpdateOrientationTop(float x, float y, float z);
-	const CMelonVector3D * GetPositionPointer() const;
-	const CMelonVector3D * GetVelocityPointer() const;
-	const CMelonVector3D * GetOrientationFrontPointer() const;
-	const CMelonVector3D * GetOrientationTopPointer() const;
+	void UpdateOrientation(float m00, float m01, float m02,
+						float m10, float m11, float m12,
+						float m20, float m21, float m22);
+	const CMelonVector3D & GetPosition() const;
+	const CMelonVector3D & GetVelocity() const;
+	const CMelonMatrix3 & GetOrientation() const;
 
 	static CListener& GetInstance();
 
@@ -24,10 +24,9 @@ public:
 	float CalculateAngleToOrientation(CMelonVector3D& pointOnPlane);
 
 private:
-	CMelonVector3D * m_position;
-	CMelonVector3D * m_velocity;
-	CMelonVector3D * m_orientationTop;
-	CMelonVector3D * m_orientationFront;
+	CMelonVector3D m_position;
+	CMelonVector3D m_velocity;
+	CMelonMatrix3 m_orientation;
 
 	// precalculated for orthagonal projection onto plane for pan
 	float m_orientationTopDotOrientationTop;

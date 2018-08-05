@@ -45,6 +45,19 @@ float CMelonVector3D::CalculateAngleBetweenVectors(const CMelonVector3D & other)
 	return acos(dotProduct);
 }
 
+float CMelonVector3D::CalculateAngleToYAxis() const
+{
+	CMelonVector3D thisNormalized = Normalize();
+
+	float dotProduct = thisNormalized.CalculateDotProduct(CMelonVector3D(0.f, 1.f, 0.f));
+	if (dotProduct > ANGLE_TOLERANCE)
+		return 0.f;
+	if (dotProduct < -ANGLE_TOLERANCE)
+		return M_PI;
+
+	return acos(dotProduct);
+}
+
 float CMelonVector3D::CalculateDotProduct(const CMelonVector3D & other) const
 {
 	return (m_fX*other.m_fX + m_fY*other.m_fY + m_fZ*other.m_fZ);
@@ -61,27 +74,27 @@ float CMelonVector3D::CalculateLength() const
 	return sqrt(m_fX*m_fX + m_fY*m_fY + m_fZ*m_fZ);
 }
 
-float CMelonVector3D::operator*(const CMelonVector3D & rhs)
+float CMelonVector3D::operator*(const CMelonVector3D & rhs) const
 {
 	return (m_fX*rhs.m_fX + m_fY * rhs.m_fY + m_fZ * rhs.m_fZ);
 }
 
-CMelonVector3D CMelonVector3D::operator+(const CMelonVector3D & rhs)
+CMelonVector3D CMelonVector3D::operator+(const CMelonVector3D & rhs) const
 {
 	return CMelonVector3D(m_fX + rhs.m_fX, m_fY + rhs.m_fY, m_fZ + rhs.m_fZ);
 }
 
-CMelonVector3D CMelonVector3D::operator-(const CMelonVector3D & rhs)
+CMelonVector3D CMelonVector3D::operator-(const CMelonVector3D & rhs) const
 {
 	return CMelonVector3D(m_fX - rhs.m_fX, m_fY - rhs.m_fY, m_fZ - rhs.m_fZ);
 }
 
-CMelonVector3D CMelonVector3D::operator*(const float rhs)
+CMelonVector3D CMelonVector3D::operator*(const float rhs) const
 {
 	return CMelonVector3D(m_fX * rhs, m_fY * rhs, m_fZ * rhs);
 }
 
-CMelonVector3D CMelonVector3D::operator/(const float rhs)
+CMelonVector3D CMelonVector3D::operator/(const float rhs) const
 {
 	return CMelonVector3D(m_fX / rhs, m_fY / rhs, m_fZ / rhs);
 }

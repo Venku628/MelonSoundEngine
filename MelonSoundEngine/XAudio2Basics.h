@@ -3,7 +3,7 @@
 #include <xaudio2.h>
 #include <stdint.h>
 #include <assert.h>
-#include "MelonVector3D.h"
+#include "MelonMatrix3.h"
 
 #ifdef _XBOX // Big-Endian
 #define fourccRIFF 'RIFF'

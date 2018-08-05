@@ -18,6 +18,7 @@ public:
 	void SetVolume(float fVolume) override;
 
 	const XAUDIO2_VOICE_SENDS& GetSFXSendList() const;
+	IXAudio2SubmixVoice * GetSubmixVoice() const;
 
 private:
 	IXAudio2SubmixVoice * m_pSubmixVoice;
