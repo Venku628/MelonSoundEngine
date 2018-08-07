@@ -15,7 +15,7 @@
 
 struct SPanParameter {
 	float CenterSpeakerPanMin = 0.f; 
-	float FrontSpeakerAngles = 0.523599f; // 30 degrees
+	float FrontSpeakerAngles = M_PI_4; // 30 degrees = 0.523599f;
 	float SurroundSpeakerAngles = M_PI_2;
 	float BackSpeakerAngles = 1.91986f; // 110 degrees
 	float VerticalPanAngle = M_PI_4;
@@ -54,9 +54,9 @@ public:
 	void Tick();
 
 private:
+	CMelonMatrix3 m_orientation;
 	CMelonVector3D m_position;
 	CMelonVector3D m_velocity;
-	CMelonMatrix3 m_orientation;
 
 	// TODO: make a Parameter struct out of these variables
 	// Default for Debugging
@@ -68,6 +68,7 @@ private:
 	// Default for Debugging
 	bool m_bFalloffEnabled = false;
 	bool m_bDopplerEffectEnabled = true;
+	bool m_bPanEnabled = true;
 
 	bool m_bVoiceMuted = false;
 

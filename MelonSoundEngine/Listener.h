@@ -8,6 +8,7 @@ public:
 	CListener(float x, float y, float z);
 	~CListener();
 
+	void SetChannelMask(DWORD dwChannelMask);
 	void UpdatePosition(float x, float y, float z);
 	void UpdateVelocity(float x, float y, float z);
 	void UpdateOrientation(float m00, float m01, float m02,
@@ -16,6 +17,7 @@ public:
 	const CMelonVector3D & GetPosition() const;
 	const CMelonVector3D & GetVelocity() const;
 	const CMelonMatrix3 & GetOrientation() const;
+	const DWORD GetChannelMask() const;
 
 	static CListener& GetInstance();
 
@@ -27,6 +29,8 @@ private:
 	CMelonVector3D m_position;
 	CMelonVector3D m_velocity;
 	CMelonMatrix3 m_orientation;
+
+	DWORD m_dwChannelMask;
 
 	// precalculated for orthagonal projection onto plane for pan
 	float m_orientationTopDotOrientationTop;

@@ -7,6 +7,7 @@ CListener::CListener()
 	m_position = CMelonVector3D(0.f, 0.f, 0.f);
 	m_velocity = CMelonVector3D(1.f, 0.f, 0.f);
 	m_orientation = CMelonMatrix3();
+
 }
 
 CListener::CListener(float x, float y, float z)
@@ -19,6 +20,11 @@ CListener::CListener(float x, float y, float z)
 
 CListener::~CListener()
 {
+}
+
+void CListener::SetChannelMask(DWORD dwChannelMask)
+{
+	m_dwChannelMask = dwChannelMask;
 }
 
 void CListener::UpdatePosition(float x, float y, float z)
@@ -50,6 +56,11 @@ const CMelonVector3D & CListener::GetVelocity() const
 const CMelonMatrix3& CListener::GetOrientation() const
 {
 	return m_orientation;
+}
+
+const DWORD CListener::GetChannelMask() const
+{
+	return m_dwChannelMask;
 }
 
 CListener & CListener::GetInstance()
