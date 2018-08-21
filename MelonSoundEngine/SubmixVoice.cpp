@@ -43,6 +43,13 @@ void CSubmixVoice::SetVolume(float fVolume)
 	m_pSubmixVoice->SetVolume(fVolume);
 }
 
+float CSubmixVoice::GetVolume()
+{
+	float fVolume = 0.f;
+	m_pSubmixVoice->GetVolume(&fVolume);
+	return fVolume;
+}
+
 
 const XAUDIO2_VOICE_SENDS& CSubmixVoice::GetSFXSendList() const
 {

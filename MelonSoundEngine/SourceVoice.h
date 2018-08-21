@@ -14,23 +14,23 @@ class CSourceVoice :
 	public CVoice
 {
 public:
-	CSourceVoice(IXAudio2 &pXAudio2, const char * stFileName);
-	CSourceVoice(IXAudio2 &pXAudio2, const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList);
+	CSourceVoice(IXAudio2 &pXAudio2, const char * stFileName, bool bLoopsInfinitley = false, XAUDIO2_VOICE_SENDS * SFXSendList = nullptr);
 	~CSourceVoice();
 
 	HRESULT StartPlayback();
 	HRESULT StopPlayback();
 
+	// 1.f means full, 0 means silence
 	void SetVolume(float fVolume) override;
+	// 1.f means full, 0 means silence
+	float GetVolume() override;
 
 	IXAudio2SourceVoice * GetSourceVoice() const;
 
 protected:
-	
 	IXAudio2SourceVoice * m_pSourceVoice;
 	IXAudio2 * m_pXAudio2;
-	HRESULT CreateSourceVoice(const char * stFileName);
-	HRESULT CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList);
+	HRESULT CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList = nullptr);
 
 	// Voicepool
 	static uint32_t GetDefaultChannelMask(int channels);
@@ -39,10 +39,8 @@ protected:
 	static unsigned int makeVoiceKey(_In_ const WAVEFORMATEX* wfx);
 
 	unsigned int m_uiVoiceKey;
-	
-	// TODO: make inheritable method to create XAudio2 Source so 3DSourceVoice can use it too
+	bool m_bLoopInfinite = false;
 
-	// TODO: Microsoft example, change notation if unchanged
 	static HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition);
 	static HRESULT ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset);
 };

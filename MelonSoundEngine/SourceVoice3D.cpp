@@ -8,7 +8,23 @@ CSourceVoice3D::~CSourceVoice3D()
 
 void CSourceVoice3D::SetVolume(float fVolume)
 {
+	m_fBaseVolume = fVolume;
 	m_pSourceVoice->SetVolume(fVolume);
+}
+
+float CSourceVoice3D::GetVolume()
+{
+	return m_fBaseVolume;
+}
+
+HRESULT CSourceVoice3D::StartPlayback()
+{
+	return m_pSourceVoice->Start();
+}
+
+HRESULT CSourceVoice3D::StopPlayback()
+{
+	return m_pSourceVoice->Stop();
 }
 
 void CSourceVoice3D::UpdatePosition(float x, float y, float z)
@@ -39,50 +55,58 @@ const CMelonMatrix3 & CSourceVoice3D::GetOrientation() const
 
 void CSourceVoice3D::Tick()
 {
-	PanTick();
-
-
 	if (m_bFalloffEnabled)
 	{
-		if (m_fFalloffRadius < m_position.CalculateDistance(CListener::GetInstance().GetPosition()))
+		float fdistance = m_position.CalculateDistance(CListener::GetInstance().GetPosition());
+		if (m_fFalloffRadius > fdistance)
 		{
 			if (m_bVoiceMuted)
 			{
 				m_bVoiceMuted = false;
-				m_pSourceVoice->SetVolume(m_fVolume);
 			}
+
+			m_pSourceVoice->SetVolume(((1.f - fdistance / m_fFalloffRadius) * (1.f - m_fMaxFalloff)) * m_fBaseVolume);
 
 			if (m_bDopplerEffectEnabled)
 			{
 				DopplerEffectTick();
 			}
-			// Room for more Tick stuff
+
+			if (m_bPanEnabled)
+			{
+				PanTick();
+			}
 		}
 		else if (!m_bVoiceMuted)
 		{
-			m_pSourceVoice->GetVolume(&m_fVolume);
 			m_pSourceVoice->SetVolume(0.f);
 			m_bVoiceMuted = true;
 		}
 	}
 	else
 	{
+		m_pSourceVoice->SetVolume(m_fBaseVolume);
+
 		if (m_bDopplerEffectEnabled)
 		{
 			DopplerEffectTick();
 		}
-		// Room for more Tick stuff
+
+		if (m_bPanEnabled)
+		{
+			PanTick();
+		}
 	}
 }
 
-// TODO: get non constant speed of sound from somewhere and remove debug
+// TODO: get non constant speed of sound from somewhere
 void CSourceVoice3D::DopplerEffectTick()
 {
 	CMelonVector3D sourceListenerVector = m_position.CalculateVectorBetweenPoints(CListener::GetInstance().GetPosition());
 	float sourceListenerDistance = sourceListenerVector.CalculateLength();
-	float debug = (DEBUG_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(m_velocity) / sourceListenerDistance)) / 
-		(DEBUG_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(CListener::GetInstance().GetVelocity()) / sourceListenerDistance));
-	m_pSourceVoice->SetSourceSampleRate(m_uiBaseSampleRate * debug);
+	m_pSourceVoice->SetSourceSampleRate(m_uiBaseSampleRate * (
+		(DEFAULT_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(m_velocity) / sourceListenerDistance)) /
+		(DEFAULT_SPEED_OF_SOUND - (sourceListenerVector.CalculateDotProduct(CListener::GetInstance().GetVelocity()) / sourceListenerDistance))));
 }
 
 
@@ -115,15 +139,15 @@ void CSourceVoice3D::PanTick()
 		// left side if panangle greater than 0, right side if smaller
 		if (fPanAngle > 0.f)
 		{
-			if (fPanAngle < debug_pan.FrontSpeakerAngles)
+			if (fPanAngle < debug_pan.fFrontSpeakerAngles)
 			{
-				float fPan = (debug_pan.FrontSpeakerAngles - fPanAngle) / (debug_pan.FrontSpeakerAngles * 2.f);
+				float fPan = (debug_pan.fFrontSpeakerAngles - fPanAngle) / (debug_pan.fFrontSpeakerAngles * 2.f);
 				MELON_SPEAKER_FRONT_RIGHT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_FRONT_LEFT = sin(M_PI_2 * fPan);
 			}
 			else
 			{
-				float fPan = (fPanAngle - debug_pan.FrontSpeakerAngles) / ((M_PI - debug_pan.FrontSpeakerAngles) * 2.f);
+				float fPan = (fPanAngle - debug_pan.fFrontSpeakerAngles) / ((M_PI - debug_pan.fFrontSpeakerAngles) * 2.f);
 				MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_FRONT_RIGHT = sin(M_PI_2 * fPan);
 			}
@@ -138,15 +162,15 @@ void CSourceVoice3D::PanTick()
 			}
 			else
 			{
-				if (fPanAngle < debug_pan.FrontSpeakerAngles)
+				if (fPanAngle < debug_pan.fFrontSpeakerAngles)
 				{
-					float fPan = (debug_pan.FrontSpeakerAngles - fPanAngle) / (debug_pan.FrontSpeakerAngles * 2.f);
+					float fPan = (debug_pan.fFrontSpeakerAngles - fPanAngle) / (debug_pan.fFrontSpeakerAngles * 2.f);
 					MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 					MELON_SPEAKER_FRONT_RIGHT = sin(M_PI_2 * fPan);
 				}
 				else
 				{
-					float fPan = (fPanAngle - debug_pan.FrontSpeakerAngles) / ((M_PI - debug_pan.FrontSpeakerAngles) * 2.f);
+					float fPan = (fPanAngle - debug_pan.fFrontSpeakerAngles) / ((M_PI - debug_pan.fFrontSpeakerAngles) * 2.f);
 					MELON_SPEAKER_FRONT_RIGHT = cos(M_PI_2 * fPan);
 					MELON_SPEAKER_FRONT_LEFT = sin(M_PI_2 * fPan);
 				}
@@ -154,17 +178,17 @@ void CSourceVoice3D::PanTick()
 			
 		}
 
-		if (debug_pan.VerticalPanEnabled)
+		if (debug_pan.bVerticalPanEnabled)
 		{
 			// where 0 would mean == y axis and 180 == -y axis
 			float fVerticalAngle = positionInLocalSpace.CalculateAngleToYAxis();
 
-			if (fVerticalAngle >= debug_pan.VerticalPanAngle)
+			if (fVerticalAngle >= debug_pan.fVerticalPanAngle)
 			{
-				float fVerticalPan = debug_pan.VerticalPanAngle / fVerticalAngle * (debug_pan.VerticalPanPowerMax - debug_pan.VerticalPanPowerMin);
-				if (afOutputMatrix[0] < debug_pan.VerticalPanPowerMin)
+				float fVerticalPan = debug_pan.fVerticalPanAngle / fVerticalAngle * (1.f - debug_pan.fVerticalPanPowerMin);
+				if (afOutputMatrix[0] < debug_pan.fVerticalPanPowerMin)
 						afOutputMatrix[0] = fVerticalPan;
-				if (afOutputMatrix[1] < debug_pan.VerticalPanPowerMin)
+				if (afOutputMatrix[1] < debug_pan.fVerticalPanPowerMin)
 						afOutputMatrix[1] = fVerticalPan;
 			}
 		}
@@ -191,21 +215,21 @@ void CSourceVoice3D::PanTick()
 		// left side if panangle greater than 0, right side if smaller
 		if (fPanAngle > 0.f)
 		{
-			if (fPanAngle < debug_pan.FrontSpeakerAngles)
+			if (fPanAngle < debug_pan.fFrontSpeakerAngles)
 			{
-				float fPan = fPanAngle / debug_pan.FrontSpeakerAngles;
+				float fPan = fPanAngle / debug_pan.fFrontSpeakerAngles;
 				MELON_SPEAKER_FRONT_CENTER = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_FRONT_LEFT = sin(M_PI_2 * fPan);
 			}
-			else if (fPanAngle < debug_pan.BackSpeakerAngles)
+			else if (fPanAngle < debug_pan.fBackSpeakerAngles)
 			{
-				float fPan = (fPanAngle - debug_pan.FrontSpeakerAngles) / (debug_pan.BackSpeakerAngles - debug_pan.FrontSpeakerAngles);
+				float fPan = (fPanAngle - debug_pan.fFrontSpeakerAngles) / (debug_pan.fBackSpeakerAngles - debug_pan.fFrontSpeakerAngles);
 				MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
 			else
 			{
-				float fPan = (fPanAngle - debug_pan.BackSpeakerAngles) / ((M_PI - debug_pan.BackSpeakerAngles) * 2.f);
+				float fPan = (fPanAngle - debug_pan.fBackSpeakerAngles) / ((M_PI - debug_pan.fBackSpeakerAngles) * 2.f);
 				MELON_SPEAKER_BACK_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_RIGHT = sin(M_PI_2 * fPan);
 			}
@@ -217,42 +241,47 @@ void CSourceVoice3D::PanTick()
 			{
 				MELON_SPEAKER_FRONT_CENTER = 1.f;
 			}
-			else if (fPanAngle < debug_pan.FrontSpeakerAngles)
+			else if (fPanAngle < debug_pan.fFrontSpeakerAngles)
 			{
 				// special case that would cause / 0
 
-				float fPan = fPanAngle / debug_pan.FrontSpeakerAngles;
+				float fPan = fPanAngle / debug_pan.fFrontSpeakerAngles;
 				MELON_SPEAKER_FRONT_CENTER = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_FRONT_RIGHT = sin(M_PI_2 * fPan);
 			}
-			else if (fPanAngle < debug_pan.BackSpeakerAngles)
+			else if (fPanAngle < debug_pan.fBackSpeakerAngles)
 			{
-				float fPan = (fPanAngle - debug_pan.FrontSpeakerAngles) / (debug_pan.BackSpeakerAngles - debug_pan.FrontSpeakerAngles);
+				float fPan = (fPanAngle - debug_pan.fFrontSpeakerAngles) / (debug_pan.fBackSpeakerAngles - debug_pan.fFrontSpeakerAngles);
 				MELON_SPEAKER_FRONT_RIGHT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_RIGHT = sin(M_PI_2 * fPan);
 			}
 			else
 			{
-				float fPan = (fPanAngle - debug_pan.BackSpeakerAngles) / ((M_PI - debug_pan.BackSpeakerAngles) * 2.f);
+				float fPan = (fPanAngle - debug_pan.fBackSpeakerAngles) / ((M_PI - debug_pan.fBackSpeakerAngles) * 2.f);
 				MELON_SPEAKER_BACK_RIGHT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
 		}
 
-		if (debug_pan.VerticalPanEnabled)
+		if (debug_pan.bVerticalPanEnabled)
 		{
 			// where 0 would mean == y axis and 180 == -y axis
 			float fVerticalAngle = positionInLocalSpace.CalculateAngleToYAxis();
 
-			if (fVerticalAngle >= debug_pan.VerticalPanAngle)
+			if (fVerticalAngle >= debug_pan.fVerticalPanAngle)
 			{
-				float fVerticalPan = debug_pan.VerticalPanAngle / fVerticalAngle * (debug_pan.VerticalPanPowerMax - debug_pan.VerticalPanPowerMin);
-				// TODO: write out for maximum efficency
-				for (int i = 0; i < iDestinationChannels; i++)
-				{
-					if (afOutputMatrix[i] < debug_pan.VerticalPanPowerMin)
-						afOutputMatrix[i] = fVerticalPan;
-				}
+				float fVerticalPan = debug_pan.fVerticalPanAngle / fVerticalAngle * (1.f - debug_pan.fVerticalPanPowerMin);
+				
+				if (afOutputMatrix[0] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[0] = fVerticalPan;
+				if (afOutputMatrix[1] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[1] = fVerticalPan;
+				if (afOutputMatrix[2] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[2] = fVerticalPan;
+				if (afOutputMatrix[4] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[4] = fVerticalPan;
+				if (afOutputMatrix[5] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[5] = fVerticalPan;
 			}
 		}
 		m_pSourceVoice->SetOutputMatrix(nullptr, 1, iDestinationChannels, afOutputMatrix);
@@ -268,27 +297,27 @@ void CSourceVoice3D::PanTick()
 		// left side if panangle greater than 0, right side if smaller
 		if (fPanAngle > 0.f)
 		{
-			if (fPanAngle < debug_pan.FrontSpeakerAngles)
+			if (fPanAngle < debug_pan.fFrontSpeakerAngles)
 			{
-				float fPan = fPanAngle / debug_pan.FrontSpeakerAngles;
+				float fPan = fPanAngle / debug_pan.fFrontSpeakerAngles;
 				MELON_SPEAKER_FRONT_CENTER = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_FRONT_LEFT = sin(M_PI_2 * fPan);
 			}
-			else if (fPanAngle < debug_pan.SurroundSpeakerAngles)
+			else if (fPanAngle < debug_pan.fSurroundSpeakerAngles)
 			{
-				float fPan = (fPanAngle - debug_pan.FrontSpeakerAngles) / (debug_pan.SurroundSpeakerAngles - debug_pan.FrontSpeakerAngles);
+				float fPan = (fPanAngle - debug_pan.fFrontSpeakerAngles) / (debug_pan.fSurroundSpeakerAngles - debug_pan.fFrontSpeakerAngles);
 				MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
-			else if (fPanAngle < debug_pan.BackSpeakerAngles)
+			else if (fPanAngle < debug_pan.fBackSpeakerAngles)
 			{
-				float fPan = (fPanAngle - debug_pan.SurroundSpeakerAngles) / (debug_pan.BackSpeakerAngles - debug_pan.SurroundSpeakerAngles);
+				float fPan = (fPanAngle - debug_pan.fSurroundSpeakerAngles) / (debug_pan.fBackSpeakerAngles - debug_pan.fSurroundSpeakerAngles);
 				MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
 			else
 			{
-				float fPan = (fPanAngle - debug_pan.BackSpeakerAngles) / ((M_PI - debug_pan.BackSpeakerAngles) * 2.f);
+				float fPan = (fPanAngle - debug_pan.fBackSpeakerAngles) / ((M_PI - debug_pan.fBackSpeakerAngles) * 2.f);
 				MELON_SPEAKER_BACK_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_RIGHT = sin(M_PI_2 * fPan);
 			}
@@ -300,48 +329,58 @@ void CSourceVoice3D::PanTick()
 			{
 				MELON_SPEAKER_FRONT_CENTER = 1.f;
 			}
-			else if (fPanAngle < debug_pan.FrontSpeakerAngles)
+			else if (fPanAngle < debug_pan.fFrontSpeakerAngles)
 			{
 				// special case that would cause / 0
 
-				float fPan = fPanAngle / debug_pan.FrontSpeakerAngles;
+				float fPan = fPanAngle / debug_pan.fFrontSpeakerAngles;
 				MELON_SPEAKER_FRONT_CENTER = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_FRONT_RIGHT = sin(M_PI_2 * fPan);
 			}
-			else if (fPanAngle < debug_pan.SurroundSpeakerAngles)
+			else if (fPanAngle < debug_pan.fSurroundSpeakerAngles)
 			{
-				float fPan = (fPanAngle - debug_pan.FrontSpeakerAngles) / (debug_pan.SurroundSpeakerAngles - debug_pan.FrontSpeakerAngles);
+				float fPan = (fPanAngle - debug_pan.fFrontSpeakerAngles) / (debug_pan.fSurroundSpeakerAngles - debug_pan.fFrontSpeakerAngles);
 				MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
-			else if (fPanAngle < debug_pan.BackSpeakerAngles)
+			else if (fPanAngle < debug_pan.fBackSpeakerAngles)
 			{
-				float fPan = (fPanAngle - debug_pan.SurroundSpeakerAngles) / (debug_pan.BackSpeakerAngles - debug_pan.SurroundSpeakerAngles);
+				float fPan = (fPanAngle - debug_pan.fSurroundSpeakerAngles) / (debug_pan.fBackSpeakerAngles - debug_pan.fSurroundSpeakerAngles);
 				MELON_SPEAKER_FRONT_LEFT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
 			else
 			{
-				float fPan = (fPanAngle - debug_pan.BackSpeakerAngles) / ((M_PI - debug_pan.BackSpeakerAngles) * 2.f);
+				float fPan = (fPanAngle - debug_pan.fBackSpeakerAngles) / ((M_PI - debug_pan.fBackSpeakerAngles) * 2.f);
 				MELON_SPEAKER_BACK_RIGHT = cos(M_PI_2 * fPan);
 				MELON_SPEAKER_BACK_LEFT = sin(M_PI_2 * fPan);
 			}
 		}
 
-		if (debug_pan.VerticalPanEnabled)
+		if (debug_pan.bVerticalPanEnabled)
 		{
 			// where 0 would mean == y axis and 180 == -y axis
 			float fVerticalAngle = positionInLocalSpace.CalculateAngleToYAxis();
 
-			if (fVerticalAngle >= debug_pan.VerticalPanAngle)
+			if (fVerticalAngle >= debug_pan.fVerticalPanAngle)
 			{
-				float fVerticalPan = debug_pan.VerticalPanAngle / fVerticalAngle * (debug_pan.VerticalPanPowerMax - debug_pan.VerticalPanPowerMin);
-				// TODO: write out for maximum efficency
-				for (int i = 0; i < iDestinationChannels; i++)
-				{
-					if (afOutputMatrix[i] < debug_pan.VerticalPanPowerMin)
-						afOutputMatrix[i] = fVerticalPan;
-				}
+				float fVerticalPan = debug_pan.fVerticalPanAngle / fVerticalAngle * (1.f - debug_pan.fVerticalPanPowerMin);
+				
+				if (afOutputMatrix[0] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[0] = fVerticalPan;
+				if (afOutputMatrix[1] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[1] = fVerticalPan;
+				if (afOutputMatrix[2] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[2] = fVerticalPan;
+				if (afOutputMatrix[4] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[4] = fVerticalPan;
+				if (afOutputMatrix[5] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[5] = fVerticalPan;
+				if (afOutputMatrix[6] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[6] = fVerticalPan;
+				if (afOutputMatrix[7] < debug_pan.fVerticalPanPowerMin)
+					afOutputMatrix[7] = fVerticalPan;
+
 			}
 		}
 		m_pSourceVoice->SetOutputMatrix(nullptr, 1, iDestinationChannels, afOutputMatrix);

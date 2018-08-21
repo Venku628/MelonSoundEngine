@@ -1,16 +1,6 @@
 #include "SourceVoice.h"
 
-CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName)
-{
-	// TODO: think of a better way to do this
-	m_pXAudio2 = &pXAudio2;
-
-	// TODO: handle hresult if necessary
-	CreateSourceVoice(stFileName);
-}
-
-
-CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList)
+CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName, bool bLoopsInfinitley, XAUDIO2_VOICE_SENDS * SFXSendList)
 {
 	// TODO: think of a better way to do this
 	m_pXAudio2 = &pXAudio2;
@@ -21,77 +11,10 @@ CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName, XAUDIO2
 
 CSourceVoice::~CSourceVoice()
 {
+	// m_pSourceVoice->DestroyVoice();
 	delete m_pSourceVoice;
 }
 
-HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName)
-{
-	// Declare Buffer structures
-
-	WAVEFORMATEXTENSIBLE wfx = { 0 };
-	XAUDIO2_BUFFER buffer = { 0 };
-
-	// Open audio file
-
-	HANDLE hFile = CreateFileA(
-		stFileName,
-		GENERIC_READ,
-		FILE_SHARE_READ,
-		NULL,
-		OPEN_EXISTING,
-		0,
-		NULL);
-
-	if (INVALID_HANDLE_VALUE == hFile)
-		return HRESULT_FROM_WIN32(GetLastError());
-
-	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, 0, NULL, FILE_BEGIN))
-		return HRESULT_FROM_WIN32(GetLastError());
-
-	// Locate RIFF chunk in audio file and check file type
-
-	DWORD dwChunkSize;
-	DWORD dwChunkPosition;
-	//check the file type, should be fourccWAVE or 'XWMA'
-	FindChunk(hFile, fourccRIFF, dwChunkSize, dwChunkPosition);
-	DWORD filetype;
-	ReadChunkData(hFile, &filetype, sizeof(DWORD), dwChunkPosition);
-	if (filetype != fourccWAVE)
-		return S_FALSE;
-
-	// Locate fmt chunk and copy contents into WAVEFORMATEXTENSIBLE structure
-
-	FindChunk(hFile, fourccFMT, dwChunkSize, dwChunkPosition);
-	ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
-
-	m_uiVoiceKey = makeVoiceKey(&wfx.Format);
-
-	// Locate data chunk and read content into buffer
-
-	FindChunk(hFile, fourccDATA, dwChunkSize, dwChunkPosition);
-	BYTE * pDataBuffer = new BYTE[dwChunkSize];
-	ReadChunkData(hFile, pDataBuffer, dwChunkSize, dwChunkPosition);
-
-	// populate XAUDIO2_BUFFER
-
-	buffer.AudioBytes = dwChunkSize;  //buffer containing audio data
-	buffer.pAudioData = pDataBuffer;  //size of the audio buffer in bytes
-	buffer.Flags = XAUDIO2_END_OF_STREAM; // tell the source voice not to expect any data after this buffer
-
-	HRESULT hr;
-
-	// Create XAudio2 source voice
-	if (FAILED(hr = m_pXAudio2->CreateSourceVoice(&m_pSourceVoice, (WAVEFORMATEX*)&wfx)))
-		return hr;
-
-	// submit XAUDIO2_BUFFER to source voice
-	if (FAILED(hr = m_pSourceVoice->SubmitSourceBuffer(&buffer)))
-		return hr;
-
-	return S_OK;
-}
-
-// TODO: if the pipeline works, reduce the amount of redundancy with the other function
 HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList)
 {
 	// Declare Buffer structures
@@ -100,7 +23,6 @@ HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_S
 	XAUDIO2_BUFFER buffer = { 0 };
 
 	// Open audio file
-
 	HANDLE hFile = CreateFileA(
 		stFileName,
 		GENERIC_READ,
@@ -117,39 +39,37 @@ HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_S
 		return HRESULT_FROM_WIN32(GetLastError());
 
 	// Locate RIFF chunk in audio file and check file type
-
 	DWORD dwChunkSize;
 	DWORD dwChunkPosition;
 	//check the file type, should be fourccWAVE or 'XWMA'
 	FindChunk(hFile, fourccRIFF, dwChunkSize, dwChunkPosition);
-	DWORD filetype;
-	ReadChunkData(hFile, &filetype, sizeof(DWORD), dwChunkPosition);
-	if (filetype != fourccWAVE)
+	DWORD dwFiletype;
+	ReadChunkData(hFile, &dwFiletype, sizeof(DWORD), dwChunkPosition);
+	if (dwFiletype != fourccWAVE)
 		return S_FALSE;
 
 	// Locate fmt chunk and copy contents into WAVEFORMATEXTENSIBLE structure
-
 	FindChunk(hFile, fourccFMT, dwChunkSize, dwChunkPosition);
 	ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
 
 	m_uiVoiceKey = makeVoiceKey(&wfx.Format);
 
 	// Locate data chunk and read content into buffer
-
 	FindChunk(hFile, fourccDATA, dwChunkSize, dwChunkPosition);
 	BYTE * pDataBuffer = new BYTE[dwChunkSize];
 	ReadChunkData(hFile, pDataBuffer, dwChunkSize, dwChunkPosition);
 
 	// populate XAUDIO2_BUFFER
-
 	buffer.AudioBytes = dwChunkSize;  //buffer containing audio data
 	buffer.pAudioData = pDataBuffer;  //size of the audio buffer in bytes
 	buffer.Flags = XAUDIO2_END_OF_STREAM; // tell the source voice not to expect any data after this buffer
-
-	HRESULT hr;
+	if (m_bLoopInfinite)
+	{
+		buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+	}
 
 	// Create XAudio2 source voice
-	
+	HRESULT hr;
 	if (FAILED(hr = m_pXAudio2->CreateSourceVoice(&m_pSourceVoice,
 		(WAVEFORMATEX*)&wfx,
 		0U,
@@ -181,11 +101,21 @@ void CSourceVoice::SetVolume(float fVolume)
 	m_pSourceVoice->SetVolume(fVolume);
 }
 
+
+
+float CSourceVoice::GetVolume()
+{
+	float fVolume = 0.f;
+	m_pSourceVoice->GetVolume(&fVolume);
+	return fVolume;
+}
+
 IXAudio2SourceVoice * CSourceVoice::GetSourceVoice() const
 {
 	return m_pSourceVoice;
 }
 
+// helper function from Microsoft examples for keygeneration
 uint32_t CSourceVoice::GetDefaultChannelMask(int channels)
 {
 	switch (channels)
@@ -202,6 +132,7 @@ uint32_t CSourceVoice::GetDefaultChannelMask(int channels)
 	}
 }
 
+// helper function from Microsoft examples for keygeneration
 uint32_t CSourceVoice::GetFormatTag(const WAVEFORMATEX * wfx)
 {
 	if (wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
@@ -227,7 +158,7 @@ uint32_t CSourceVoice::GetFormatTag(const WAVEFORMATEX * wfx)
 	}
 }
 
-
+// helper function from Microsoft examples to confirm validity of a waveformatex
 bool CSourceVoice::IsValid(_In_ const WAVEFORMATEX* wfx)
 {
 	if (!wfx)
@@ -664,6 +595,7 @@ bool CSourceVoice::IsValid(_In_ const WAVEFORMATEX* wfx)
 	}
 }
 
+// function from Microsoft examples to generate a unique key for a waveformatex
 unsigned int CSourceVoice::makeVoiceKey(_In_ const WAVEFORMATEX * wfx)
 {
 	assert(IsValid(wfx));
@@ -771,6 +703,7 @@ unsigned int CSourceVoice::makeVoiceKey(_In_ const WAVEFORMATEX * wfx)
 	return result.key;
 }
 
+// function from Microsoft coding guide to find specific chungs in a RIFF-file
 HRESULT CSourceVoice::FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition)
 {
 	HRESULT hr = S_OK;
@@ -826,6 +759,7 @@ HRESULT CSourceVoice::FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize,
 
 }
 
+// function from Microsoft coding guide to read chunkdata after having found it with FindChunk(..)
 HRESULT CSourceVoice::ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset)
 {
 	HRESULT hr = S_OK;

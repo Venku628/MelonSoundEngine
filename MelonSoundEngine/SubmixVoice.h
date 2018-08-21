@@ -16,6 +16,7 @@ public:
 	CSubmixVoice * CreateSubSubmixVoice();
 
 	void SetVolume(float fVolume) override;
+	float GetVolume() override;
 
 	const XAUDIO2_VOICE_SENDS& GetSFXSendList() const;
 	IXAudio2SubmixVoice * GetSubmixVoice() const;

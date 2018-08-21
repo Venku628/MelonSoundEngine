@@ -149,10 +149,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="IVoiceNotify.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="MelonMatrix3.h" />
     <ClInclude Include="MelonSoundEngine.h" />
     <ClInclude Include="MelonVector3D.h" />
+    <ClInclude Include="ReverbXAPO.h" />
     <ClInclude Include="SourceVoice.h" />
     <ClInclude Include="SourceVoice3D.h" />
     <ClInclude Include="SubmixVoice.h" />
@@ -164,6 +166,7 @@
     <ClCompile Include="MelonMatrix3.cpp" />
     <ClCompile Include="MelonSoundEngine.cpp" />
     <ClCompile Include="MelonVector3D.cpp" />
+    <ClCompile Include="ReverbXAPO.cpp" />
     <ClCompile Include="SourceVoice.cpp" />
     <ClCompile Include="SourceVoice3D.cpp" />
     <ClCompile Include="SubmixVoice.cpp" />
