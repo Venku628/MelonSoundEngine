@@ -1,7 +1,7 @@
-#include "CustomXAPO.h"
+#include "ReverbXAPO.h"
 
 /*
-STDMETHODIMP CustomXAPO::LockForProcess(UINT32 InputLockedParameterCount, const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS * pInputLockedParameters,
+STDMETHODIMP ReverbXAPO::LockForProcess(UINT32 InputLockedParameterCount, const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS * pInputLockedParameters,
 	UINT32 OutputLockedParameterCount, const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS * pOutputLockedParameters)
 {
 	assert(!IsLocked());
@@ -24,7 +24,7 @@ STDMETHODIMP CustomXAPO::LockForProcess(UINT32 InputLockedParameterCount, const 
 }
 */
 
-STDMETHODIMP_(void) CustomXAPO::Process(UINT32 InputProcessParameterCount, const XAPO_PROCESS_BUFFER_PARAMETERS * pInputProcessParameters, 
+STDMETHODIMP_(void) ReverbXAPO::Process(UINT32 InputProcessParameterCount, const XAPO_PROCESS_BUFFER_PARAMETERS * pInputProcessParameters, 
 	UINT32 OutputProcessParameterCount, XAPO_PROCESS_BUFFER_PARAMETERS * pOutputProcessParameters, BOOL IsEnabled)
 {
 	assert(IsLocked());

@@ -86,14 +86,14 @@ HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_S
 	return S_OK;
 }
 
-HRESULT CSourceVoice::StartPlayback()
+void CSourceVoice::StartPlayback()
 {
-	return m_pSourceVoice->Start(0);
+	m_pSourceVoice->Start(0);
 }
 
-HRESULT CSourceVoice::StopPlayback()
+void CSourceVoice::StopPlayback()
 {
-	return m_pSourceVoice->Stop(0);
+	m_pSourceVoice->Stop(0);
 }
 
 void CSourceVoice::SetVolume(float fVolume)
@@ -108,6 +108,11 @@ float CSourceVoice::GetVolume()
 	float fVolume = 0.f;
 	m_pSourceVoice->GetVolume(&fVolume);
 	return fVolume;
+}
+
+void CSourceVoice::SetSampleRate(unsigned int sampleRate)
+{
+	m_pSourceVoice->SetSourceSampleRate(sampleRate);
 }
 
 IXAudio2SourceVoice * CSourceVoice::GetSourceVoice() const

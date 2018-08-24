@@ -58,8 +58,6 @@ public:
 	// 1.f means full, 0 means silence
 	float GetVolume() override;
 
-	HRESULT StartPlayback();
-	HRESULT StopPlayback();
 
 	void UpdatePosition(float x, float y, float z);
 	void UpdateVelocity(float x, float y, float z);

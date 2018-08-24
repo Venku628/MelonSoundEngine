@@ -18,6 +18,11 @@ public:
 	void SetVolume(float fVolume) override;
 	float GetVolume() override;
 
+	void SetSampleRate(unsigned int sampleRate) override;
+
+	void StartPlayback() override;
+	void StopPlayback() override;
+
 	const XAUDIO2_VOICE_SENDS& GetSFXSendList() const;
 	IXAudio2SubmixVoice * GetSubmixVoice() const;
 

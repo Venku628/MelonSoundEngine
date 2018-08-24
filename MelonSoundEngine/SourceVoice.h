@@ -17,13 +17,15 @@ public:
 	CSourceVoice(IXAudio2 &pXAudio2, const char * stFileName, bool bLoopsInfinitley = false, XAUDIO2_VOICE_SENDS * SFXSendList = nullptr);
 	~CSourceVoice();
 
-	HRESULT StartPlayback();
-	HRESULT StopPlayback();
+	void StartPlayback() override;
+	void StopPlayback() override;
 
 	// 1.f means full, 0 means silence
 	void SetVolume(float fVolume) override;
 	// 1.f means full, 0 means silence
 	float GetVolume() override;
+
+	void SetSampleRate(unsigned int sampleRate) override;
 
 	IXAudio2SourceVoice * GetSourceVoice() const;
 

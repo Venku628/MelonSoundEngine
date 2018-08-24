@@ -50,6 +50,22 @@ float CSubmixVoice::GetVolume()
 	return fVolume;
 }
 
+void CSubmixVoice::SetSampleRate(unsigned int sampleRate)
+{
+	// TODO: Debug message
+	// Error, Submix Sample Rate can only be set at creation
+}
+
+void CSubmixVoice::StartPlayback()
+{
+	// TODO: debug error
+}
+
+void CSubmixVoice::StopPlayback()
+{
+	// TODO: debug error
+}
+
 
 const XAUDIO2_VOICE_SENDS& CSubmixVoice::GetSFXSendList() const
 {

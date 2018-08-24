@@ -17,16 +17,6 @@ float CSourceVoice3D::GetVolume()
 	return m_fBaseVolume;
 }
 
-HRESULT CSourceVoice3D::StartPlayback()
-{
-	return m_pSourceVoice->Start();
-}
-
-HRESULT CSourceVoice3D::StopPlayback()
-{
-	return m_pSourceVoice->Stop();
-}
-
 void CSourceVoice3D::UpdatePosition(float x, float y, float z)
 {
 	m_position.SetXYZ(x, y, z);
