@@ -129,13 +129,16 @@ CMelonSoundEngine::CMelonSoundEngine()
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	XAudio2Create(&m_pXAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
 	m_pXAudio2->CreateMasteringVoice(&m_pMasteringVoice);
+
+	DWORD dwChannelMask;
+	m_pMasteringVoice->GetChannelMask(&dwChannelMask);
+	CListener::GetInstance().SetChannelMask(dwChannelMask);
 }
 
 
 CMelonSoundEngine::~CMelonSoundEngine()
 {
-	
-
+	TrimVoicePool();
 	delete m_pMasteringVoice;
 	delete m_pXAudio2;
 }
@@ -194,14 +197,22 @@ void CMelonSoundEngine::StopPlayback(unsigned int uiTarget)
 
 void CMelonSoundEngine::SetVolume(unsigned int uiTarget, float fVolume)
 {
+	m_uiHandleMap.at(uiTarget)->SetVolume(fVolume);
 }
 
 void CMelonSoundEngine::SetEffectChain(unsigned int uiTarget, const XAUDIO2_EFFECT_CHAIN * pEffectChain)
 {
+	m_uiHandleMap.at(uiTarget)->SetEffectChain(pEffectChain);
 }
 
 void CMelonSoundEngine::SetEffectParameters(unsigned int uiTarget, unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize)
 {
+	m_uiHandleMap.at(uiTarget)->SetEffectParameters(uiEffectIndex, pParameters, uiParametersByteSize);
+}
+
+void CMelonSoundEngine::SetOutputMatrix(unsigned int uiTarget, unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix)
+{
+	m_uiHandleMap.at(uiTarget)->SetOutputMatrix(uiSourceChannels, uiDestinationChannels, pfLevelMatrix);
 }
 
 void CMelonSoundEngine::UpdatePostion(unsigned int uiTarget, float x, float y, float z)
@@ -239,7 +250,7 @@ void CMelonSoundEngine::SetDopplerEffectParameters(unsigned int uiTarget, SDoppl
 	m_uiHandleMap.at(uiTarget)->SetDopplerEffectParameters(parameters);
 }
 
-IXAudio2MasteringVoice * CMelonSoundEngine::GetMasteringVoice() const
+IXAudio2MasteringVoice * CMelonSoundEngine::GetMasteringVoice()
 {
 	return m_pMasteringVoice;
 }
@@ -255,7 +266,7 @@ unsigned int CMelonSoundEngine::CreateVoiceHandle(CVoice * voice)
 	return uiVoiceHandle;
 }
 
-IXAudio2 * CMelonSoundEngine::GetXAudio2() const
+IXAudio2 * CMelonSoundEngine::GetXAudio2()
 {
 	return m_pXAudio2;
 }
@@ -275,8 +286,6 @@ bool CMelonSoundEngine::Update()
 		break;
 
 	case WAIT_OBJECT_0:     // OnCritialError
-		return false;
-
 	case WAIT_OBJECT_0 + 1: // OnBufferEnd
 		// Scan for completed one-shot voices
 		for (auto it = m_oneShotList.begin(); it != m_oneShotList.end(); )

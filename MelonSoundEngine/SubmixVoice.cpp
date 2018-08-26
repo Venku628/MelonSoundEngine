@@ -30,6 +30,11 @@ void CSubmixVoice::SetEffectParameters(unsigned int uiEffectIndex, const void * 
 	m_pSubmixVoice->SetEffectParameters(uiEffectIndex, pParameters, uiParametersByteSize);
 }
 
+void CSubmixVoice::SetOutputMatrix(unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix)
+{
+	m_pSubmixVoice->SetOutputMatrix(nullptr, uiSourceChannels, uiDestinationChannels, pfLevelMatrix);
+}
+
 const XAUDIO2_VOICE_SENDS * CSubmixVoice::GetSFXSendList()
 {
 	return &m_SFXSendList;

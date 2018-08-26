@@ -12,6 +12,7 @@ public:
 	void SetVolume(float fVolume) override;
 	void SetEffectChain(const XAUDIO2_EFFECT_CHAIN * pEffectChain) override;
 	void SetEffectParameters(unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize) override;
+	void SetOutputMatrix(unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix) override;
 
 	const XAUDIO2_VOICE_SENDS * GetSFXSendList() override;
 	IXAudio2SubmixVoice * GetSubmixVoice() const;

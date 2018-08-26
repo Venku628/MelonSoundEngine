@@ -37,6 +37,7 @@ public:
 	// virtual float GetVolume() = 0;
 	virtual void SetEffectChain(const XAUDIO2_EFFECT_CHAIN * pEffectChain) = 0;
 	virtual void SetEffectParameters(unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize) = 0;
+	virtual void SetOutputMatrix(unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix) = 0;
 
 	// SubmixVoice method
 	virtual const XAUDIO2_VOICE_SENDS * GetSFXSendList() = 0;

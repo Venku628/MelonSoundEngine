@@ -101,6 +101,11 @@ void CSourceVoice::SetEffectParameters(unsigned int uiEffectIndex, const void * 
 	m_pSourceVoice->SetEffectParameters(uiEffectIndex, pParameters, uiParametersByteSize);
 }
 
+void CSourceVoice::SetOutputMatrix(unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix)
+{
+	m_pSourceVoice->SetOutputMatrix(nullptr, uiSourceChannels, uiDestinationChannels, pfLevelMatrix);
+}
+
 void CSourceVoice::SetVolume(float fVolume)
 {
 	m_pSourceVoice->SetVolume(fVolume);

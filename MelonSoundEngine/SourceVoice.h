@@ -23,6 +23,7 @@ public:
 
 	void SetEffectChain(const XAUDIO2_EFFECT_CHAIN * pEffectChain) override;
 	void SetEffectParameters(unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize) override;
+	void SetOutputMatrix(unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix) override;
 
 	// 1.f means full, 0 means silence
 	void SetVolume(float fVolume) override;

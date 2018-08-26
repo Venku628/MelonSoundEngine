@@ -60,6 +60,7 @@ public:
 	void SetVolume(unsigned int uiTarget, float fVolume);
 	void SetEffectChain(unsigned int uiTarget, const XAUDIO2_EFFECT_CHAIN * pEffectChain);
 	void SetEffectParameters(unsigned int uiTarget, unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize);
+	void SetOutputMatrix(unsigned int uiTarget, unsigned int uiSourceChannels, unsigned int uiDestinationChannels, const float * pfLevelMatrix);
 
 	void UpdatePostion(unsigned int uiTarget, float x, float y, float z);
 	void UpdateVelocity(unsigned int uiTarget, float x, float y, float z);
@@ -74,8 +75,8 @@ public:
 	void SetDopplerEffectParameters(unsigned int uiTarget, SDopplerEffectParameters & parameters);
 
 
-	IXAudio2 * GetXAudio2() const;
-	IXAudio2MasteringVoice * GetMasteringVoice() const;
+	IXAudio2 * GetXAudio2();
+	IXAudio2MasteringVoice * GetMasteringVoice();
 
 	unsigned int CreateVoiceHandle(CVoice * voice); 
 
@@ -83,8 +84,6 @@ public:
 	bool Update();
 	void TrimVoicePool();
 	void DestroyAllVoices();
-
-	// void AssignVoice();
 
 private:
 	CMelonSoundEngine();
@@ -100,8 +99,6 @@ private:
 	std::map<unsigned int, CVoice*> m_uiHandleMap;
 
 	VoiceCallback m_voiceCallback;
-	std::set<IVoiceNotify*> m_notifyObjectList;
-	std::set<IVoiceNotify*> m_notifyUpdateList;
 
 	// Voicepool
 	static uint32_t GetDefaultChannelMask(int channels);
