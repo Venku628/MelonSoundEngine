@@ -17,7 +17,7 @@ unsigned int CMelonSoundEngine::GetUniqueVoiceHandle() const
 }
  
 // This function should write in the debug log in the future
-IXAudio2SourceVoice * CMelonSoundEngine::OpenSourceFile(const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList, bool bLoopsInfinitley)
+IXAudio2SourceVoice * CMelonSoundEngine::OpenSourceFile(const char * stFileName, bool bLoopsInfinitley, const XAUDIO2_VOICE_SENDS * SFXSendList)
 {
 	// Declare Buffer structures
 	WAVEFORMATEXTENSIBLE wfx = { 0 };
@@ -70,29 +70,56 @@ IXAudio2SourceVoice * CMelonSoundEngine::OpenSourceFile(const char * stFileName,
 		buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
 	}
 	
-
 	IXAudio2SourceVoice * pSourceVoice;
-	// Create XAudio2 source voice
 	HRESULT hr;
-	if (FAILED(hr = m_pXAudio2->CreateSourceVoice(&pSourceVoice,
-		(WAVEFORMATEX*)&wfx,
-		0U,
-		XAUDIO2_DEFAULT_FREQ_RATIO,
-		NULL,
-		SFXSendList
-	)))
-		return nullptr;
+
+	unsigned int uiVoiceKey = 0;
+	if (!bLoopsInfinitley)
+	{
+		uiVoiceKey = makeVoiceKey(&wfx.Format);
+		// does this Voice already exist?
+		if (m_voicepool.count(uiVoiceKey))
+		{
+			IXAudio2SourceVoice * pExistingVoice = m_voicepool[uiVoiceKey];
+			m_voicepool.erase(uiVoiceKey);
+			m_oneShotList.emplace(uiVoiceKey, pExistingVoice);
+			return pExistingVoice;
+		}
+
+
+		// Create XAudio2 source voice
+		if (FAILED(hr = m_pXAudio2->CreateSourceVoice(&pSourceVoice,
+			(WAVEFORMATEX*)&wfx,
+			0U,
+			XAUDIO2_DEFAULT_FREQ_RATIO,
+			&m_voiceCallback,
+			SFXSendList
+		)))
+			return nullptr;
+	}
+	else
+	{
+		// Create XAudio2 source voice
+		if (FAILED(hr = m_pXAudio2->CreateSourceVoice(&pSourceVoice,
+			(WAVEFORMATEX*)&wfx,
+			0U,
+			XAUDIO2_DEFAULT_FREQ_RATIO,
+			NULL,
+			SFXSendList
+		)))
+			return nullptr;
+	}
 
 	// submit XAUDIO2_BUFFER to source voice
 	if (FAILED(hr = pSourceVoice->SubmitSourceBuffer(&buffer)))
 		return nullptr;
 
-	// TODO: emplace pointer and 
+	
 	if (!bLoopsInfinitley)
 	{
-		unsigned int uiVoiceKey = makeVoiceKey(&wfx.Format);
 		m_oneShotList.emplace(uiVoiceKey, pSourceVoice);
 	}
+	
 
 	return pSourceVoice;
 }
@@ -107,6 +134,8 @@ CMelonSoundEngine::CMelonSoundEngine()
 
 CMelonSoundEngine::~CMelonSoundEngine()
 {
+	
+
 	delete m_pMasteringVoice;
 	delete m_pXAudio2;
 }
@@ -117,19 +146,97 @@ CMelonSoundEngine & CMelonSoundEngine::GetInstance()
 	return instance;
 }
 
-CSourceVoice * CMelonSoundEngine::CreateSourceVoice(const char * stFileName)
+unsigned int CMelonSoundEngine::CreateSourceVoice(const char * stFileName, bool bLoopsInfinitley, unsigned int uiTargetSubmixHandle)
 {
-	return new CSourceVoice(* m_pXAudio2, stFileName);
+	CSourceVoice * pSourceVoice = nullptr;
+
+	if (uiTargetSubmixHandle)
+		pSourceVoice = new CSourceVoice(OpenSourceFile(stFileName, bLoopsInfinitley, m_uiHandleMap.at(uiTargetSubmixHandle)->GetSFXSendList()));
+	else
+		pSourceVoice = new CSourceVoice(OpenSourceFile(stFileName, bLoopsInfinitley));
+
+	return CreateVoiceHandle(pSourceVoice);
 }
 
-CSourceVoice3D * CMelonSoundEngine::CreateSourceVoice3D(const char * stFileName)
+unsigned int CMelonSoundEngine::CreateSourceVoice3D(const char * stFileName, bool bLoopsInfinitley, unsigned int uiTargetSubmixHandle)
 {
-	return new CSourceVoice3D(*m_pXAudio2, stFileName);
+	CSourceVoice * pSourceVoice = nullptr;
+	if (uiTargetSubmixHandle)
+		pSourceVoice = new CSourceVoice3D(OpenSourceFile(stFileName, bLoopsInfinitley, m_uiHandleMap.at(uiTargetSubmixHandle)->GetSFXSendList()));
+	else
+		pSourceVoice = new CSourceVoice3D(OpenSourceFile(stFileName, bLoopsInfinitley));
+
+	return CreateVoiceHandle(pSourceVoice);
 }
 
-CSubmixVoice * CMelonSoundEngine::CreateSubmixVoice()
+unsigned int CMelonSoundEngine::CreateSubmixVoice(unsigned int uiChannelNumberInput, unsigned int uiSampleRate, unsigned int uiTargetSubmixHandle)
 {
-	return new CSubmixVoice(*m_pXAudio2);
+	IXAudio2SubmixVoice * pXAudio2SubmixVoice = nullptr;
+	if (uiTargetSubmixHandle)
+		m_pXAudio2->CreateSubmixVoice(&pXAudio2SubmixVoice, uiChannelNumberInput, uiSampleRate, 0, 0, m_uiHandleMap.at(uiTargetSubmixHandle)->GetSFXSendList());
+	else
+		m_pXAudio2->CreateSubmixVoice(&pXAudio2SubmixVoice, uiChannelNumberInput, uiSampleRate, 0, 0);
+
+	CSubmixVoice * pSubmixVoice = new CSubmixVoice(pXAudio2SubmixVoice);
+
+	return CreateVoiceHandle(pSubmixVoice);
+}
+
+void CMelonSoundEngine::StartPlayback(unsigned int uiTarget)
+{
+	m_uiHandleMap.at(uiTarget)->StartPlayback();
+}
+
+void CMelonSoundEngine::StopPlayback(unsigned int uiTarget)
+{
+	m_uiHandleMap.at(uiTarget)->StopPlayback();
+}
+
+void CMelonSoundEngine::SetVolume(unsigned int uiTarget, float fVolume)
+{
+}
+
+void CMelonSoundEngine::SetEffectChain(unsigned int uiTarget, const XAUDIO2_EFFECT_CHAIN * pEffectChain)
+{
+}
+
+void CMelonSoundEngine::SetEffectParameters(unsigned int uiTarget, unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize)
+{
+}
+
+void CMelonSoundEngine::UpdatePostion(unsigned int uiTarget, float x, float y, float z)
+{
+	m_uiHandleMap.at(uiTarget)->UpdatePosition(x, y, z);
+}
+
+void CMelonSoundEngine::UpdateVelocity(unsigned int uiTarget, float x, float y, float z)
+{
+	m_uiHandleMap.at(uiTarget)->UpdateVelocity(x, y, z);
+}
+
+void CMelonSoundEngine::UpdateRotation(unsigned int uiTarget, float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22)
+{
+	m_uiHandleMap.at(uiTarget)->UpdateRotation(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+}
+
+void CMelonSoundEngine::Tick(unsigned int uiTarget)
+{
+	m_uiHandleMap.at(uiTarget)->Tick();
+}
+
+void CMelonSoundEngine::SetPanParameters(unsigned int uiTarget, SPanParameters & parameters)
+{
+	m_uiHandleMap.at(uiTarget)->SetPanParameters(parameters);
+}
+
+void CMelonSoundEngine::SetFalloffParameters(unsigned int uiTarget, SFalloffParameters & parameters)
+{
+	m_uiHandleMap.at(uiTarget)->SetFalloffParameters(parameters);
+}
+
+void CMelonSoundEngine::SetDopplerEffectParameters(unsigned int uiTarget, SDopplerEffectParameters & parameters)
+{
+	m_uiHandleMap.at(uiTarget)->SetDopplerEffectParameters(parameters);
 }
 
 IXAudio2MasteringVoice * CMelonSoundEngine::GetMasteringVoice() const
@@ -139,6 +246,10 @@ IXAudio2MasteringVoice * CMelonSoundEngine::GetMasteringVoice() const
 
 unsigned int CMelonSoundEngine::CreateVoiceHandle(CVoice * voice)
 {
+	if (voice == nullptr)
+	{
+		return 0;
+	}
 	unsigned int uiVoiceHandle = GetUniqueVoiceHandle();
 	m_uiHandleMap.emplace(uiVoiceHandle, voice);
 	return uiVoiceHandle;
@@ -149,14 +260,15 @@ IXAudio2 * CMelonSoundEngine::GetXAudio2() const
 	return m_pXAudio2;
 }
 
-// modified Implementation of DirectXTK example
+// slightly modified Implementation of DirectXTK example
 bool CMelonSoundEngine::Update()
 {
 	if (!m_pXAudio2)
 		return false;
 
-	HANDLE event = m_voiceCallback.mBufferEnd.get();
+	HANDLE event = m_voiceCallback.m_hBufferEnd;
 	DWORD result = WaitForSingleObjectEx(event, 0, false);
+
 	switch (result)
 	{
 	case WAIT_TIMEOUT:

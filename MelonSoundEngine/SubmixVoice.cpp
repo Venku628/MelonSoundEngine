@@ -2,40 +2,17 @@
 
 
 
-CSubmixVoice::CSubmixVoice(IXAudio2 &pXAudio2)
+CSubmixVoice::CSubmixVoice(IXAudio2SubmixVoice * pSubmixVoice)
 {
-	// TODO: think of a better way to do this
-	m_pXAudio2 = &pXAudio2;
-
-	CreateSubmixVoice();
-
+	m_pSubmixVoice = pSubmixVoice;
 	m_SFXSend = { 0, m_pSubmixVoice };
 	m_SFXSendList = { 1, &m_SFXSend };
-
-	
-	
 }
 
 
 CSubmixVoice::~CSubmixVoice()
 {
-	
 	delete m_pSubmixVoice;
-}
-
-CSourceVoice * CSubmixVoice::CreateSourceVoice(const char * stFileName)
-{
-	return new CSourceVoice(*m_pXAudio2, stFileName, &m_SFXSendList);
-}
-
-CSourceVoice3D * CSubmixVoice::CreateSourceVoice3D(const char * stFileName)
-{
-	return new CSourceVoice3D(*m_pXAudio2, stFileName, &m_SFXSendList);
-}
-
-CSubmixVoice * CSubmixVoice::CreateSubSubmixVoice()
-{
-	return nullptr;
 }
 
 void CSubmixVoice::SetVolume(float fVolume)
@@ -43,33 +20,19 @@ void CSubmixVoice::SetVolume(float fVolume)
 	m_pSubmixVoice->SetVolume(fVolume);
 }
 
-float CSubmixVoice::GetVolume()
+void CSubmixVoice::SetEffectChain(const XAUDIO2_EFFECT_CHAIN * pEffectChain)
 {
-	float fVolume = 0.f;
-	m_pSubmixVoice->GetVolume(&fVolume);
-	return fVolume;
+	m_pSubmixVoice->SetEffectChain(pEffectChain);
 }
 
-void CSubmixVoice::SetSampleRate(unsigned int sampleRate)
+void CSubmixVoice::SetEffectParameters(unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize)
 {
-	// TODO: Debug message
-	// Error, Submix Sample Rate can only be set at creation
+	m_pSubmixVoice->SetEffectParameters(uiEffectIndex, pParameters, uiParametersByteSize);
 }
 
-void CSubmixVoice::StartPlayback()
+const XAUDIO2_VOICE_SENDS * CSubmixVoice::GetSFXSendList()
 {
-	// TODO: debug error
-}
-
-void CSubmixVoice::StopPlayback()
-{
-	// TODO: debug error
-}
-
-
-const XAUDIO2_VOICE_SENDS& CSubmixVoice::GetSFXSendList() const
-{
-	return m_SFXSendList;
+	return &m_SFXSendList;
 }
 
 IXAudio2SubmixVoice * CSubmixVoice::GetSubmixVoice() const
@@ -77,7 +40,6 @@ IXAudio2SubmixVoice * CSubmixVoice::GetSubmixVoice() const
 	return m_pSubmixVoice;
 }
 
-// TODO: Do I need to handle HRESULTs?
 HRESULT CSubmixVoice::CreateSubmixVoice()
 {
 	// TODO: what to do with the channel number?

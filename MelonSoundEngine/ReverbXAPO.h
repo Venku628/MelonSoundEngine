@@ -8,24 +8,17 @@
 #define TEST_SAMPLE_RATE 44100
 #define TEST_DELAY_IN_S 0.3f
 
-// This class is not finished yet, the reverb calculation is wrong
+// This class is not finished yet, the reverb calculation seems to be wrong 
 // Comb Reverb Filter
 class __declspec(uuid("{A4945B8A-EB14-4c96-8067-DF726B528091}"))
-	ReverbXAPO : public CXAPOBase
+	CReverbXAPO : public CXAPOBase
 {
 public:
 	
-	ReverbXAPO(const XAPO_REGISTRATION_PROPERTIES *pRegProperties) : CXAPOBase(pRegProperties) {};
+	CReverbXAPO(const XAPO_REGISTRATION_PROPERTIES *pRegProperties) : CXAPOBase(pRegProperties) {};
 
 	short m_uChannels;
 	short m_uBytesPerSample;
-
-	/*
-	STDMETHOD(LockForProcess) (UINT32 InputLockedParameterCount,
-		const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS* pInputLockedParameters,
-		UINT32 OutputLockedParameterCount,
-		const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS* pOutputLockedParameters);
-	*/
 
 	STDMETHOD_(void, Process)(UINT32 InputProcessParameterCount,
 		const XAPO_PROCESS_BUFFER_PARAMETERS* pInputProcessParameters,

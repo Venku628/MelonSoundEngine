@@ -74,15 +74,15 @@ CMelonMatrix3 CMelonMatrix3::CalculateInverseRotation()
 					+ m02 *(m10 * m21 - m11 * m20);
 
 	return CMelonMatrix3(
-		(m11*m22 - m12 * m21) / determinant, //
-		(m21*m02 - m22 * m01) / determinant,
-		(m01*m12 - m02 * m11) / determinant,
-		(m12*m20 - m10 * m22) / determinant, //
-		(m22*m00 - m20 * m02) / determinant,
-		(m02*m10 - m00 * m12) / determinant,
-		(m10*m21 - m11 * m20) / determinant, //
-		(m20*m01 - m21 * m00) / determinant,
-		(m00*m11 - m01 * m10) / determinant
+		(m11 * m22 - m12 * m21) / determinant, //
+		(m21 * m02 - m22 * m01) / determinant,
+		(m01 * m12 - m02 * m11) / determinant,
+		(m12 * m20 - m10 * m22) / determinant, //
+		(m22 * m00 - m20 * m02) / determinant,
+		(m02 * m10 - m00 * m12) / determinant,
+		(m10 * m21 - m11 * m20) / determinant, //
+		(m20 * m01 - m21 * m00) / determinant,
+		(m00 * m11 - m01 * m10) / determinant
 		);
 }
 

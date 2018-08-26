@@ -28,7 +28,7 @@ public:
 private:
 	CMelonVector3D m_position;
 	CMelonVector3D m_velocity;
-	CMelonMatrix3 m_orientation;
+	CMelonMatrix3 m_rotation;
 
 	DWORD m_dwChannelMask;
 

@@ -25,8 +25,7 @@ public:
 
 	CMelonMatrix3 CalculateInverseRotation();
 
-	
-
+	// Debug
 	void printMatrix();
 
 protected:

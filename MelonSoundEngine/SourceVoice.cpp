@@ -1,18 +1,13 @@
 #include "SourceVoice.h"
 
-CSourceVoice::CSourceVoice(IXAudio2 & pXAudio2, const char * stFileName, bool bLoopsInfinitley, XAUDIO2_VOICE_SENDS * SFXSendList)
+CSourceVoice::CSourceVoice(IXAudio2SourceVoice * pSourceVoice)
 {
-	// TODO: think of a better way to do this
-	m_pXAudio2 = &pXAudio2;
-
-	// TODO: handle hresult if necessary
-	CreateSourceVoice(stFileName, SFXSendList);
+	m_pSourceVoice = pSourceVoice;
 }
 
 CSourceVoice::~CSourceVoice()
 {
-	// m_pSourceVoice->DestroyVoice();
-	delete m_pSourceVoice;
+	// don´t destory voice
 }
 
 HRESULT CSourceVoice::CreateSourceVoice(const char * stFileName, XAUDIO2_VOICE_SENDS * SFXSendList)
@@ -96,18 +91,19 @@ void CSourceVoice::StopPlayback()
 	m_pSourceVoice->Stop(0);
 }
 
+void CSourceVoice::SetEffectChain(const XAUDIO2_EFFECT_CHAIN * pEffectChain)
+{
+	m_pSourceVoice->SetEffectChain(pEffectChain);
+}
+
+void CSourceVoice::SetEffectParameters(unsigned int uiEffectIndex, const void * pParameters, unsigned int uiParametersByteSize)
+{
+	m_pSourceVoice->SetEffectParameters(uiEffectIndex, pParameters, uiParametersByteSize);
+}
+
 void CSourceVoice::SetVolume(float fVolume)
 {
 	m_pSourceVoice->SetVolume(fVolume);
-}
-
-
-
-float CSourceVoice::GetVolume()
-{
-	float fVolume = 0.f;
-	m_pSourceVoice->GetVolume(&fVolume);
-	return fVolume;
 }
 
 void CSourceVoice::SetSampleRate(unsigned int sampleRate)

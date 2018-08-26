@@ -48,6 +48,9 @@
     <ClInclude Include="ReverbXAPO.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="MelonSoundEngineAPI.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceVoice.cpp">
@@ -72,6 +75,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="ReverbXAPO.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="MelonSoundEngineAPI.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Voice.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

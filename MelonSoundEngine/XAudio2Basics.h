@@ -23,6 +23,9 @@
 #define fourccDPDS 'sdpd'
 #endif
 
+#define DEFAULT_SPEED_OF_SOUND 343
+#define DEFAULT_SAMPLE_RATE 44100
+
 #ifndef SPEAKER_FRONT_LEFT
 #define SPEAKER_FRONT_LEFT            0x00000001
 #define SPEAKER_FRONT_RIGHT           0x00000002

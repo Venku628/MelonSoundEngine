@@ -153,6 +153,7 @@
     <ClInclude Include="Listener.h" />
     <ClInclude Include="MelonMatrix3.h" />
     <ClInclude Include="MelonSoundEngine.h" />
+    <ClInclude Include="MelonSoundEngineAPI.h" />
     <ClInclude Include="MelonVector3D.h" />
     <ClInclude Include="ReverbXAPO.h" />
     <ClInclude Include="SourceVoice.h" />
@@ -165,11 +166,13 @@
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="MelonMatrix3.cpp" />
     <ClCompile Include="MelonSoundEngine.cpp" />
+    <ClCompile Include="MelonSoundEngineAPI.cpp" />
     <ClCompile Include="MelonVector3D.cpp" />
     <ClCompile Include="ReverbXAPO.cpp" />
     <ClCompile Include="SourceVoice.cpp" />
     <ClCompile Include="SourceVoice3D.cpp" />
     <ClCompile Include="SubmixVoice.cpp" />
+    <ClCompile Include="Voice.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,30 +1,7 @@
 #include "ReverbXAPO.h"
 
-/*
-STDMETHODIMP ReverbXAPO::LockForProcess(UINT32 InputLockedParameterCount, const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS * pInputLockedParameters,
-	UINT32 OutputLockedParameterCount, const XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS * pOutputLockedParameters)
-{
-	assert(!IsLocked());
-	assert(InputLockedParameterCount == 1);
-	assert(OutputLockedParameterCount == 1);
-	assert(pInputLockedParameters != NULL);
-	assert(pOutputLockedParameters != NULL);
-	assert(pInputLockedParameters[0].pFormat != NULL);
-	assert(pOutputLockedParameters[0].pFormat != NULL);
-
-
-	m_uChannels = pInputLockedParameters[0].pFormat->nChannels;
-	m_uBytesPerSample = (pInputLockedParameters[0].pFormat->wBitsPerSample >> 3);
-
-	return CXAPOBase::LockForProcess(
-		InputLockedParameterCount,
-		pInputLockedParameters,
-		OutputLockedParameterCount,
-		pOutputLockedParameters);
-}
-*/
-
-STDMETHODIMP_(void) ReverbXAPO::Process(UINT32 InputProcessParameterCount, const XAPO_PROCESS_BUFFER_PARAMETERS * pInputProcessParameters, 
+// modified version of a DirectX SDK Sample
+STDMETHODIMP_(void) CReverbXAPO::Process(UINT32 InputProcessParameterCount, const XAPO_PROCESS_BUFFER_PARAMETERS * pInputProcessParameters, 
 	UINT32 OutputProcessParameterCount, XAPO_PROCESS_BUFFER_PARAMETERS * pOutputProcessParameters, BOOL IsEnabled)
 {
 	assert(IsLocked());
